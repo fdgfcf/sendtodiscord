@@ -3,7 +3,6 @@ import zipfile
 import requests
 import pyautogui
 import subprocess
-import sys
 import sqlite3
 import base64
 import json
